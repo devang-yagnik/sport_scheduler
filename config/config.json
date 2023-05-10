@@ -1,0 +1,23 @@
+{
+  "development": {
+    "username": "postgres",
+    "password": "2103",
+    "database": "SportsSchedulerDev",
+    "host": "127.0.0.1",
+    "dialect": "postgres",
+    "logging": false
+  },
+  "test": {
+    "username": "postgres",
+    "password": "2103",
+    "database": "SportsSchedulerTest",
+    "host": "127.0.0.1",
+    "dialect": "postgres",
+    "logging": false
+  },
+  "production": {
+    "use_env_variable": "DB_URL",
+    "dialect": "postgres",
+    "logging": false
+  }
+}

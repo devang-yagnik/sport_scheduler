@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="csrf-token" content="<%=csrfToken%>" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-aFq/bzH65dt+w6FI2ooMVUpc+21e0SRygnTpmBvdBgSdnuTN7QbdgL+OapgHtvPp" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha2/dist/js/bootstrap.bundle.min.js" integrity="sha384-qKXV1j0HvMUeCBQ+QVp7JcfGl760yU08IQ+GpUo5hlbpg51QRiuqHAJz8+BrxE/N" crossorigin="anonymous"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="/script.js"></script>
+    <title><%=sport.sportname %></title>
+    <script>
+      function showEditModal() {
+        const modal = document.getElementById('editModal');
+        modal.style.display = 'block';
+      }
+
+      function hideEditModal() {
+        const modal = document.getElementById('editModal');
+        modal.style.display = 'none';
+      }
+
+      var token = document.querySelector("meta[name='csrf-token']").getAttribute("content");
+      token = token.trim();
+
+      function deleteSport(id) {
+        alert(`Deleting sport with id ${id}`);
+        fetch(`/sport/${id}`, {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+            //
+          },
+          body: JSON.stringify({
+            _csrf: token,
+          }),
+        })
+          .then(res => {
+            window.location.href = '/home';
+          })
+          .catch(err => console.error(err));
+      }
+
+      function submitChanges(id) {
+        const newValue = document.getElementById('newValue').value;
+        console.log(newValue);
+        fetch(`/sport/${id}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            _csrf: token,
+            sportname: newValue,
+           
+          }),
+        })
+          .then(res => {
+            window.location.reload();
+          })
+          .catch(err => {
+            console.error(err);
+            window.location.reload();
+          });
+      }
+    </script>
+  </head>
+
+  <body class="relative flex flex-col h-screen justify-between bg-info-subtle text-stone-600">
+    <nav class="py-4 px-8 bg-teal-200 fixed w-full fixed top-0">
+      <ul class="flex justify-between items-center">
+        <li>
+          <a href="/home" class="h1 font-normal">Home</a>
+        </li>
+        <li class="relative px-5" id="options-menu-button">
+          <button class="h2 font-normal">
+            Options
+          </button>
+          <ul
+            class="absolute top-full left-0 bg-secondary-subtle border border-gray-200 p-4 rounded-md shadow-lg z-50 opacity-0 invisible transition-opacity duration-200 text-center"
+            id="options-menu"
+          >
+            <li>
+              <a
+                class="block py-2 text-green-600 hover:text-green-800"
+                href="/signout"
+                >Sign Out</a
+              >
+            </li>
+            <li>
+              <div class="form-check form-switch m-5">
+                <input id="inputSwitch" onchange="toggle()" class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault">
+                <label class="form-check-label text-green-600" for="flexSwitchCheckDefault">Theme</label>
+              </div>
+            </li>
+          </ul>
+        </li>
+      </ul>
+    </nav>
+
+    <div class="m-auto bg-secondary-subtle rounded-lg shadow-lg p-8 w-4/5 lg:w-1/2">
+      <h1 class="text-4xl font-bold mb-6">
+        <%=sport.sportname %>
+      </h1>
+      <% if (admin) { %>
+      <div class="flex justify-between mb-6">
+        <button
+          class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+          onclick="showEditModal()"
+        >
+          Edit
+        </button>
+        <button
+          class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+          onclick="deleteSport(<%=sport.id%>)"
+        >
+          Delete
+        </button>
+      </div>
+      <% } %>
+      <div id="editModal" style="display: none" class="mt-8">
+        <label for="newValue" class="mr-2">Change Name to:</label>
+        <input
+          type="text"
+          id="newValue"
+          class="border rounded-lg py-2 px-4 mr-2"
+        />
+        <button
+          onclick="submitChanges(<%=sport.id%>)"
+          class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-2"
+        >
+          Submit
+        </button>
+        <button
+          onclick="hideEditModal()"
+          class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded"
+        >
+          Cancel
+        </button>
+      </div>
+
+      <% if (gameSession.length> 0) { %>
+
+      <ul class="list-none">
+        <h1 class="text-1xl font-bold">Upcoming Sessions</h1>
+
+        <% for (var i=0; i<gameSession.length; i++) { %>
+        <li>
+          <a href="/sessionpage/<%=gameSession[i].id%>">
+            <div
+              class="flex rounded hover:bg-purple-300 items-center my-4 px-4 py-2"
+            >
+              <span class="mr-6">
+                <%=  (gameSession[i].when)  %>
+              </span>
+              <% if (gameSession[i].count===0){ %>
+              <p class="text-red-500 font-bold">Slot Full</p>
+              <% } else if (gameSession[i].count===1 ){ %>
+              <p class="text-yellow-500 font-bold">Last Slot</p>
+              <% } else { %>
+              <p class="text-green-500 font-bold">
+                <%= gameSession[i].count %>
+                slots
+              </p>
+              <% } %>
+            </div>
+          </a>
+        </li>
+        <% } %>
+      </ul>
+
+      <% } else { %>
+
+      <h1 class="text-1xl font-bold">No Upcoming Sessions</h1>
+
+      <% } %>
+
+      <% if (pastSession.length> 0) { %>
+
+      <ul class="list-none">
+        <h1 class="text-1xl font-bold">Past Sessions</h1>
+
+        <% for (var i=0; i<pastSession.length; i++) { %>
+        <li>
+          <a href="/sessionpage/<%= pastSession[i].id %>">
+            <div
+              class="flex rounded hover:bg-purple-50 items-center my-4 px-4 py-2 text-decoration-line: line-through;"
+            >
+              <span class="line-through mr-6">
+                <%= new Date(pastSession[i].when).toLocaleString('en-GB', {day:'2-digit', month:'2-digit',
+                              year:'numeric', hour:'2-digit', minute:'2-digit'}) %>
+              </span>
+
+              <% if (pastSession[i].count===0){ %>
+              <p class="text-red-500 font-bold">Slot Full</p>
+              <% } else if (pastSession[i].count===1 ){ %>
+              <p class="text-yellow-500 font-bold">Last Slot</p>
+              <% } else { %>
+              <p class="text-green-500 font-bold">
+                <%= pastSession[i].count %>
+                slots
+              </p>
+              <% } %>
+            </div>
+          </a>
+        </li>
+        <% } %>
+      </ul>
+
+      <% } else { %>
+
+      <h1 class="text-1xl font-bold">No Previous Sessions</h1>
+
+      <% } %>
+
+      <p class="mt-8">
+        <a href="/sessioncreate/<%=sport.id%>" class="text-blue-500 font-bold"
+          >Create New Session</a
+        >
+      </p>
+    </div>
+    <script>
+      const optionsMenuButton = document.getElementById('options-menu-button');
+      const optionsMenu = document.getElementById('options-menu');
+
+      optionsMenuButton.addEventListener('mouseover', () => {
+        optionsMenu.classList.remove('invisible');
+        optionsMenu.classList.add('visible');
+        optionsMenu.classList.remove('opacity-0');
+        optionsMenu.classList.add('opacity-100');
+      });
+
+      optionsMenuButton.addEventListener('mouseout', () => {
+        optionsMenu.classList.remove('visible');
+        optionsMenu.classList.add('invisible');
+        optionsMenu.classList.remove('opacity-100');
+        optionsMenu.classList.add('opacity-0');
+      });
+
+      optionsMenu.addEventListener('mouseover', () => {
+        optionsMenu.classList.remove('invisible');
+        optionsMenu.classList.add('visible');
+        optionsMenu.classList.remove('opacity-0');
+        optionsMenu.classList.add('opacity-100');
+      });
+      optionsMenu.addEventListener('mouseout', () => {
+        optionsMenu.classList.remove('visible');
+        optionsMenu.classList.add('invisible');
+        optionsMenu.classList.remove('opacity-100');
+        optionsMenu.classList.add('opacity-0');
+      });
+    </script>
+  </body>
+</html>

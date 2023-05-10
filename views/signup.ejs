@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="csrf-token" content=<%= csrfToken %>>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="/css/styles.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-aFq/bzH65dt+w6FI2ooMVUpc+21e0SRygnTpmBvdBgSdnuTN7QbdgL+OapgHtvPp" crossorigin="anonymous">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha2/dist/js/bootstrap.bundle.min.js" integrity="sha384-qKXV1j0HvMUeCBQ+QVp7JcfGl760yU08IQ+GpUo5hlbpg51QRiuqHAJz8+BrxE/N" crossorigin="anonymous"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="/script.js"></script>
+  <title>Sport Scheduler | Signup</title>
+</head>
+<body class="bg-info-subtle font-sans text-stone-600 flex flex-col h-screen justify-between">
+  <header class="md:flex bg-teal-200">
+    <%- include("header.ejs") %>
+  </header>
+  <main class="m-auto p-3 bg-secondary-subtle rounded">  
+    <h2 class="h2 font-semibold p-1 m-4">Register as a new User</h2> 
+    <form action="/signup" method="post">
+      <input type="hidden" name="_csrf" value=<%= csrfToken %>>
+      <input type="text" name="name" placeholder="Name" class="block rounded w-full m-auto mb-3 p-3">
+      <input type="email" name="email" placeholder="Email ID" class="invalid:border-pink-500 invalid:text-pink-600
+      focus:invalid:border-pink-500 focus:invalid:ring-pink-500 block rounded w-full m-auto mb-3 p-3">
+      <input type="text" name="password" placeholder="Password" class="block rounded w-full m-auto mb-3 p-3">
+      <button type="submit" class="bg-green-500 hover:bg-green-600 rounded p-2 w-full my-2 text-gray-100">Sign Up</button>
+    </form>
+  </main>
+
+  <% if(messages && messages.error && messages.error.length > 0)  { %>
+    <% for(var i=0; i<messages.error.length; i++) { %>
+      <div class="bg-red-100 border border-red-400 text-red-700 px-3 mt-0 py-2 m-auto rounded relative text-center" role="alert">
+        <strong class="font-bold">Holy smokes!</strong>
+        <span class="block sm:inline"><%= messages.error[i] %></span>
+      </div>
+    <% } %>
+  <% } %>
+
+</body>
+</html>

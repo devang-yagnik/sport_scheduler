@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>New session</title>
+  <meta name="csrf-token" content="<%=csrfToken%>" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-aFq/bzH65dt+w6FI2ooMVUpc+21e0SRygnTpmBvdBgSdnuTN7QbdgL+OapgHtvPp" crossorigin="anonymous">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha2/dist/js/bootstrap.bundle.min.js" integrity="sha384-qKXV1j0HvMUeCBQ+QVp7JcfGl760yU08IQ+GpUo5hlbpg51QRiuqHAJz8+BrxE/N" crossorigin="anonymous"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="/script.js"></script>
+</head>
+<body class="relative flex flex-col h-screen justify-between bg-info-subtle text-stone-600">
+  <nav class="py-4 px-8 bg-teal-200 fixed w-full fixed top-0">
+    <ul class="flex justify-between items-center">
+      <li>
+        <a href="/home" class="h1 font-normal">Home</a>
+      </li>
+      <li class="relative px-5" id="options-menu-button">
+        <button class="h2 font-normal">
+          Options
+        </button>
+        <ul
+          class="absolute top-full left-0 bg-secondary-subtle border border-gray-200 p-4 rounded-md shadow-lg z-50 opacity-0 invisible transition-opacity duration-200 text-center"
+          id="options-menu"
+        >
+          <li>
+            <a
+              class="block py-2 text-green-600 hover:text-green-800"
+              href="/signout"
+              >Sign Out</a
+            >
+          </li>
+          <li>
+            <div class="form-check form-switch m-5">
+              <input id="inputSwitch" onchange="toggle()" class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault">
+              <label class="form-check-label text-green-600" for="flexSwitchCheckDefault">Theme</label>
+            </div>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </nav>
+  <div class="m-auto p-3 bg-secondary-subtle rounded">
+    <div class="col-span-2 col-start-3 px-8 py-4">
+      <form action="/sportsession/<%=id%>" method="post">
+        <input type="hidden" name="_csrf" value="<%=csrfToken%>" />
+        <div class="py-3">
+          <label for="email" class="block">Where will the session happen?</label>
+          <input class="border border-gray-300 rounded p-2 w-full text-gray-900 mt-2" type="text" name="venue" />
+        </div>
+        <div class="py-3">
+          <label for="when" class="block">When?</label>
+          <input class="border border-gray-300 rounded p-2 w-full text-gray-900 mt-2" type="datetime-local"  
+          min="${new Date().toISOString().slice(0, 16)}"
+            name="when"   />
+        </div>
+        <div class="py-3">
+          <label for="dt" class="block">Players you would like to add in the session</label>
+          <input class="border border-gray-300 rounded p-2 w-full text-gray-900 mt-2" type="text" name="players" />
+        </div>
+        <div class="py-3">
+          <label for="requiredteammembers" class="block">How many more players do you
+            need?</label>
+          <input class="border border-gray-300 rounded p-2 w-full mt-2" type="number"
+            name="requiredteammembers" max="100" />
+        </div>
+        <div class="py-3">
+          <button  class="text-green-600 rounded text-white bg-green-600 hover:bg-green-800 font-medium px-5 py-2"
+            type="submit">
+            Submit
+          </button>
+        </div>
+      </form>
+      <% if(messages && messages.error && messages.error.length> 0) { %>
+        <ul class="list-disc list-inside text-red-500">
+          <% for(var i=0; i<messages.error.length; i++) { %>
+            <li class="text-red-500">
+              <%= messages.error[i] %>
+            </li>
+            <% } %>
+              <% } %>
+    </div>
+  </div>
+  <script>
+    const optionsMenuButton = document.getElementById('options-menu-button');
+    const optionsMenu = document.getElementById('options-menu');
+
+    optionsMenuButton.addEventListener('mouseover', () => {
+      optionsMenu.classList.remove('invisible');
+      optionsMenu.classList.add('visible');
+      optionsMenu.classList.remove('opacity-0');
+      optionsMenu.classList.add('opacity-100');
+    });
+
+    optionsMenuButton.addEventListener('mouseout', () => {
+      optionsMenu.classList.remove('visible');
+      optionsMenu.classList.add('invisible');
+      optionsMenu.classList.remove('opacity-100');
+      optionsMenu.classList.add('opacity-0');
+    });
+
+    optionsMenu.addEventListener('mouseover', () => {
+      optionsMenu.classList.remove('invisible');
+      optionsMenu.classList.add('visible');
+      optionsMenu.classList.remove('opacity-0');
+      optionsMenu.classList.add('opacity-100');
+    });
+    optionsMenu.addEventListener('mouseout', () => {
+      optionsMenu.classList.remove('visible');
+      optionsMenu.classList.add('invisible');
+      optionsMenu.classList.remove('opacity-100');
+      optionsMenu.classList.add('opacity-0');
+    });
+  </script>
+</body>
+</html>
